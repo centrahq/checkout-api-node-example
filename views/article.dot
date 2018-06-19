@@ -1,0 +1,78 @@
+{{ base = it.req.base; }}
+<main>
+	{{~it.parts :value}}
+		{{ /*loop through all parts of the template*/ }}
+	
+		{{? value.template === "article_list"}}
+			{{ /*list a section of articles*/ }}
+			<div class="article-section">
+
+			{{ articles=this.include().filterArticles(it.user_data.articles, value.slots.section.text); }}
+			{{~articles :article}}
+				<div><a href="{{!base}}/{{!article.sectionUri}}/{{!article.uri}}"><h3>{{!article.listTitle}}</h3> <img src="{{!article.listImage}}" height="450" /></a></div>
+			{{~}}
+			</div>
+
+		{{?? value.template === "slideshow_item"}}
+			{{ /*this is a slideshow template*/ }}
+			
+			{{? value.slots.slideshow_list }}
+				{{ /*only show if we have images in slideshow*/ }}
+				<div class="article-section">
+					<ul class="slideshow-list clearfix">
+					{{~value.slots.slideshow_list.images :image}}
+						{{ image=this.include().linkWrap('<img src="{{!image.url}}" height="420" />', base, image.linkToUrl); }}
+		
+						<li>{{=image}}</li>
+					{{~}}
+					</ul>
+				</div>
+			{{?}}
+		{{?? value.template === "header_item"}}
+	
+			{{? value.slots.header.text }}
+				<div class="article-section">
+					<h1>{{!value.slots.header.text}}</h1>
+				</div>
+			{{?}}
+
+		{{?? value.template === "info_item"}}
+			<div class="article-section">
+				{{? value.slots.header.text }}
+					<h1>{{!value.slots.header.text}}</h1>
+				{{?}}
+		
+				{{? value.slots.content.textHtml }}
+					{{=value.slots.content.textHtml}}
+				{{?}}
+			</div>
+		{{?? value.template === "hero_item"}}
+			<div class="article-section">
+				{{ image=this.include().linkWrap(
+					'<span>{{!value.slots.subheader.text}}</span><h1>{{!value.slots.header.text}}</h1> <img src="{{!value.slots.hero_image.url}}" height="420" />', 
+					base,
+					value.slots.header_link.text
+				); }}
+	
+				<div>{{=image}}</div>
+			</div>
+		{{?? value.template === "products_item"}}
+			<div class="article-section">
+			<ul class="product-list clearfix">
+				{{~value.slots.product_list.products :product_item}}
+					{{ product_item_image = product_item.product.media ? (product_item.product.media.standard? product_item.product.media.standard[0] : false) : false; }}
+					<li>
+						<a href="{{!base}}/{{!product_item.product.categoryUri}}/{{!product_item.product.uri}}">
+							{{=this.include().image('{{!product_item_image}}',150)}}
+							<br />
+							<span>{{!product_item.product.name}} {{!product_item.product.price}} {{!product_item.slotDescription}}</span>
+						</a>
+					</li>
+				{{~}}
+			</ul>
+			</div>
+		{{?? value.template === "something_else"}}
+	...
+		{{?}}
+	{{~}}
+</main>

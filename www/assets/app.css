@@ -1,0 +1,17 @@
+form, body, ul, li, hr { margin: 0; padding: 0; }
+ul { list-style: none; }
+form { display: inline; }
+header ul { display: inline; list-style: none; margin-left: 20px; }
+header li { display: inline; padding-right: 10px; }
+header li:last-child { padding-right: 0; }
+header hr { margin-top: 10px; }
+header { position: relative; min-width: 650px; padding: 10px 0 10px 10px; border-bottom: 1px solid #ccc; }
+main { padding: 10px; }
+footer { padding: 10px; }
+hr { border: 0; border-bottom: 1px solid #ccc; }
+#header-side { position: absolute; top: 10px; right: 10px; white-space: nowrap; }
+#header-side #header-cart { padding-left: 10px; }
+.article-section { margin-bottom: 20px; }
+.product-list li { float: left; padding-left: 10px; width: 200px; height: 215px; text-align: center; }
+.slideshow-list li { float: left; padding-left: 10px; }
+.clearfix::after { content: ""; clear: both; display: table; }

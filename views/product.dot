@@ -1,0 +1,45 @@
+{{ base = it.req.base; }}
+<main>
+	<h1>AAA {{!it.title}}</h1>
+	<h2>{{!it.variantName}}</h2>
+	
+	{{?it.images.length}}
+	{{~it.images :image}}
+		{{=this.include().image('{{!image}}',200)}}
+	{{~}}
+	{{??}}
+		{{=this.include().image('',200)}}
+	{{?}}
+
+	<p>{{!it.price}}</p>
+	<form action="{{!base}}{{!it.req.url}}" method="post">
+	
+		{{? it.items.length > 1 }}
+			<div>
+			{{~it.items :item}}
+				<label{{? !item.stock }} style="color: lightgray"{{?}}><input type="radio" name="item" value="{{!item.item}}"{{? !item.stock }} disabled{{?}}{{? item.selected }} checked{{?}} /> {{!item.name}}</label>
+			{{~}}
+			</div>
+		{{??}}
+			<input type="hidden" name="item" value="{{!items[0].item}}" />
+		{{?}}
+		<button type="submit">Add to cart</button>
+	</form>
+
+	{{? it.variants.length > 0 }}
+		<hr />
+		<h4>Colors</h4>
+		<a href="{{!base}}{{!it.req.url}}">{{=this.include().image('{{!it.images[0]}}',50)}} <div>{{!it.variantName}}</div></a>
+		{{~it.variants :variant}}
+			<a href="{{!base}}/{{!it.category.uri}}/{{!variant.uri}}">{{=this.include().image('{{!variant.image}}',50)}} <div>{{!variant.variantName}}</div></a>
+		{{~}}
+	{{?}}
+	
+	{{? it.related.length > 0 }}
+		<hr />
+		<h4>Related</h4>
+		{{~it.related :variant}}
+			<a href="{{!base}}/{{!it.category.uri}}/{{!variant.uri}}">{{=this.include().image('{{!variant.image}}',50)}} <div>{{!variant.name}} {{!variant.price}}</div></a>
+		{{~}}
+	{{?}}
+</main>

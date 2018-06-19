@@ -1,0 +1,6 @@
+{{ return {
+		image: function(media, height) { return '<img src="' + (media?media:'https://via.placeholder.com/500x600') + '" height="' + height + '" />'; },
+		linkWrap: function(content, base, link) { if(link) { return '<a href="' + base + link + '">' + content + '</a>'; } else return content; },
+		filterArticles: function(articles, section) { 
+			return articles.filter(function(article) { return article.section === section; }); 
+		} }; }}

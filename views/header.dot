@@ -1,0 +1,36 @@
+{{ base = it.req.base; }}
+<html>
+<head>
+	<title>{{!it.header_data.title}}</title>
+	<link rel="stylesheet" href="/assets/app.css" type="text/css" media="all"/>
+	{{? it.header_data.canonicalUrl }}
+	<link rel="canonical" href="{{!it.header_data.canonicalUrl}}" />
+	{{?}}
+<script>
+var base = '{{=base}}';
+</script>
+</head>
+<body>
+<header>
+	<a href="{{!base}}/">Start page</a>
+	<ul>
+	{{~it.categories :value}}
+		<li><a href="{{!base}}/{{!value.uri}}">{{!value.name}}</a></li>
+	{{~}}
+	</ul>
+
+	<ul>
+	<li><a href="{{!base}}/lookbooks">Lookbooks</a></li>
+		{{ lookbooks=this.include().filterArticles(it.user_data.articles, 'lookbooks'); }}
+		{{~lookbooks :value}}
+			<li><a href="{{!base}}/lookbooks/{{!value.uri}}">{{!value.listTitle}}</a></li>
+		{{~}}
+	</ul>
+	<div id="header-side">
+		<form action="{{!base}}/search" method="get">
+			<input name="q" value="{{!it.req.query.q}}" />
+			<button type="submit">Search</button>
+		</form>
+		<span id="header-cart"><a href="{{!base}}/selection">Cart ({{=it.user_data.selection && it.user_data.selection.selection.totals && it.user_data.selection.selection.totals.totalQuantity || 0}})</a></span>
+	</div>
+</header>

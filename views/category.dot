@@ -1,0 +1,15 @@
+{{ base = it.req.base; }}
+<main>
+	<h1>{{!it.title}}</h1>
+	<ul class="product-list clearfix">
+	{{~it.products :product}}
+		<li>
+			<a href="{{!base}}/{{!product.url}}">
+				{{=this.include().image('{{!product.image}}',150)}}
+				<br />
+				<span>{{!product.name}} {{!product.price}}</span>
+			</a>
+		</li>
+	{{~}}
+	</ul>
+</main>

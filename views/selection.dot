@@ -1,0 +1,100 @@
+{{ base = it.req.base; }}
+<main>
+	<h1>Selection</h1>
+	<form action="{{!base}}/selection" method="post" id="voucher-form"></form>
+	<form action="{{!base}}/selection" method="post" id="voucher-remove-form"></form>
+	<form action="{{!base}}/selection" method="post" id="payment-method-form"></form>
+	
+	{{?it.errors}}
+	<div style="background:red;">
+		<p>Errors in the form</p>
+		{{?it.errorMessages}}
+			<p>{{!it.errorMessages}}</p>
+		{{?}}
+		{{?it.errors.stock}}
+			<p>Unavailable items</p>
+		{{?}}
+	</div>
+	{{?}}
+	
+	{{? (it.products.length || 0) > 0 }}
+		<h4>Products</h4>
+		<form action="{{!base}}/selection" method="post">
+		<ul style="list-style-type: none;">
+		{{~it.products :product}}
+			<li>
+				<a href="{{!base}}/{{!product.url}}">{{=this.include().image('{{!product.image}}',50)}} <div>{{!product.name}} {{!product.size}}</div></a>
+				{{!product.quantity}} x {{!product.price}} = {{!product.totalPrice}}
+				<button type="submit" name="decrease[]" value="{{!product.line}}">-</button>
+				<button type="submit" name="increase[]" value="{{!product.line}}">+</button>
+				<button type="submit" name="remove[]" value="{{!product.line}}">x</button>
+			</li>
+		{{~}}
+		</ul>
+		</form>
+		
+		<h4>Voucher</h4>
+		{{~it.vouchers :voucher}}
+			<div>
+				{{!voucher.voucher}}
+				 {{!voucher.priceOff}}
+				<button form="voucher-remove-form" name="voucher_remove" value="{{!voucher.voucher}}" type="submit">Remove</button></div>
+		{{~}}
+		<input form="voucher-form" name="voucher" /><button form="voucher-form" type="submit">OK</button>
+	
+		<h4>Ship to country:</h4>
+		<label{{=it.checkError('address.country')}}>country:<select id="country" onchange="change_country(this.value)">
+		{{~it.countries :value}}
+			<option value="{{!value.country}}"{{? value.country === it.user_data.country}} selected{{?}}>{{!value.name}}</a></li>
+		{{~}}
+		</select></label>
+		{{? it.states.length }} 
+		<label{{=it.checkError('address.state')}}>state:
+		<select name="state" onchange="change_state(document.getElementById('country').value, this.value)">
+		<option value="">Select</option>
+		{{~it.states :value}}
+			<option value="{{!value.state}}"{{? value.state === it.user_data.country_state}} selected{{?}}>{{!value.name}}</a></li>
+		{{~}}
+		</select></label>
+		{{?}}
+	
+		<form action="{{!base}}/selection" method="post">
+			<input type="hidden" name="checkout" value="1" />
+			<h4>Payment</h4>
+			{{~it.paymentMethods :paymentMethod}}
+			<label{{=it.checkError('paymentMethod')}}>
+				<input type="radio" name="payment_method" form="payment-method-form" onclick="set_payment_method(this.value)" value="{{!paymentMethod.paymentMethod}}"
+					{{?paymentMethod.paymentMethod === it.selection.paymentMethod}} checked{{?}} /> {{!paymentMethod.name}} 
+				{{? paymentMethod.handlingCostAsNumber > 0 }}{{!paymentMethod.handlingCost}}{{?}}
+			</label>
+			{{~}}
+		
+			<h4>Shipping address</h4>
+			{{?it.fields.address.email.visible}}<div{{=it.checkError('address.email')}}><label>email: <input placeholder="email" name="email" value="test@centra.com" /></label>{{?}}
+			{{?it.fields.address.firstName.visible}}<div{{=it.checkError('address.firstName')}}><label>firstname: <input placeholder="firstname" name="firstName" value="johan" /></label>{{?}}
+			{{?it.fields.address.lastName.visible}}<div{{=it.checkError('address.lastName')}}><label>lastname: <input placeholder="lastname" name="lastName" value="johansson" /></label>{{?}}
+			{{?it.fields.address.address1.visible}}<div{{=it.checkError('address.address1')}}><label>address: <input placeholder="address" name="address1" value="malarvarvsbacken 8" /></label>{{?}}
+			{{?it.fields.address.address2.visible}}<div{{=it.checkError('address.address2')}}><label>coaddress: <input placeholder="coaddress" name="address2" value="c/o xxx" /></label>{{?}}
+			{{?it.fields.address.zipCode.visible}}<div{{=it.checkError('address.zipcode')}}><label>zipcode: <input placeholder="zipcode" name="zipCode" value="90210" /></label>{{?}}
+			{{?it.fields.address.city.visible}}<div{{=it.checkError('address.city')}}><label>city: <input placeholder="city" name="city" value="sthlm" /></label>{{?}}
+			{{?it.fields.address.phoneNumber.visible}}<div{{=it.checkError('address.phoneNumber')}}><label>phone: <input placeholder="phone" name="phoneNumber" value="0921021" /></label>{{?}}
+			<div{{=it.checkError('termsAndConditions')}}><label>Terms and conditions: <input type="checkbox" name="termsAndConditions" value="1" /> I accept the </label><a href="#">Terms and Conditions</a></div>
+			<div><button type="submit">Checkout</button>
+		</form>
+	
+		<h4>Totals</h4>
+		<dl>
+			<dt>Product total:</dt>
+			<dd>{{!it.selection.totals.itemsTotalPrice}}</dd>
+			{{? it.selection.totals.totalDiscountPriceAsNumber }}<dt>Discount:</dt><dd>{{!it.selection.totals.totalDiscountPrice}}</dd>{{?}}
+			<dt>Shipping:</dt><dd>{{!it.selection.totals.shippingPrice}}</dd>
+			{{? it.selection.totals.handlingCostPriceAsNumber }}<dt>Handling:</dt><dd>{{!it.selection.totals.handlingCostPrice}}</dd>{{?}}
+			{{? it.selection.totals.taxDeductedAsNumber }}<dt>Tax deduct:</dt><dd>{{!it.selection.totals.taxDeducted}}</dd>{{?}}
+			<dt><strong>Grand total:</dt><dd>{{!it.selection.totals.grandTotalPrice}}</strong></dd>
+			{{? it.selection.totals.taxPercent }}<dt>(Incl VAT {{!it.selection.totals.taxPercent}}%)</dt><dd>({{!it.selection.totals.grandTotalPriceTax}})</dd>{{?}}
+		</dl>
+	
+	{{??}}
+	No items in selection.
+	{{?}}
+</main>

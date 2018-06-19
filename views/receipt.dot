@@ -1,0 +1,14 @@
+{{ base = it.req.base; }}
+<main>
+	<h1>Receipt {{!it.order.order}}</h1>
+	
+	<h4>Products</h4>
+	<ul style="list-style-type: none;">
+	{{~it.products :product}}
+		<li>
+			<a href="{{!base}}/{{!product.url}}">{{=this.include().image('{{!product.image}}',50)}} <div>{{!product.name}} {{!product.size}}</div></a>
+			{{!product.quantity}} x {{!product.price}} = {{!product.totalPrice}}
+		</li>
+	{{~}}
+	</ul>
+</main>

@@ -1,0 +1,32 @@
+{{ base = it.req.base; }}
+<footer>
+	<hr />
+	<script src="/assets/app.js"></script>
+	<div>
+		<p>Change country:</p>
+		<select onchange="change_country(this.value)">
+		{{~it.countries :value}}
+			<option value="{{!value.country}}"{{? value.country === it.user_data.country}} selected{{?}}>{{!value.name}}</a></li>
+		{{~}}
+		</select>
+	</div>
+{{? it.req.use_languages }}
+	<div>
+		<p>Language:</p>
+		<select onchange="change_language(this.value)">
+		{{~it.languages :value}}
+			<option value="{{!value.language}}"{{? value.language === it.user_data.language}} selected{{?}}>{{!value.name}}</a></li>
+		{{~}}
+		</select>
+	</div>
+{{?}}
+	<div>
+		<p>Register for newsletter</p>
+		<form onsubmit="return subscribe(this[0]);">
+			<input type="email" placeholder="Email" />
+			<button>Register</button>
+		</form>
+	</div>
+</footer>
+</body>
+</html>
