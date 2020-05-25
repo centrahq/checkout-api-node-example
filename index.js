@@ -120,7 +120,7 @@ var centra = {
 			if(selection && selection.body.selection) {
 				user_data.selection = selection.body
         		// modify selection if stuff differs.
-				var selection_data = user_data.selection.authorized;
+				var selection_data = user_data.selection.location;
 				change = {};
 				if(selection_data.country != user_data.country) change.country = user_data.country;
 				if(selection_data.market != user_data.market) change.market = user_data.market;
@@ -380,7 +380,7 @@ var centra = {
 		var user_data = { ... centra.init_user_data }; //make this current user's data.
 		centra.init(req, res, user_data).then(function() {
 			var params = Object.assign(req.query, req.body);
-			centra_api('POST', 'selection/payment-result', {paymentMethodFields: params}, user_data.token).then(function(response) {
+			centra_api('POST', 'payment-result', {paymentMethodFields: params}, user_data.token).then(function(response) {
 				if(response.body.order) {
 					res.redirect(utils.hostUrl(req) + '/selection/receipt');
 					res.end()
@@ -398,7 +398,7 @@ var centra = {
 	paymentReceipt: function(req, res, next) {
 		var user_data = { ... centra.init_user_data }; //make this current user's data.
 		centra.init(req, res, user_data).then(function() {
-			centra_api('GET', 'selection', {}, user_data.token).then(function(response) {
+			centra_api('GET', 'receipt', {}, user_data.token).then(function(response) {
 				if(response.body.order) {
 					render.finalize(req, res, 'receipt', user_data, response);
 				} else {
@@ -444,7 +444,7 @@ var centra = {
 				current_selection = Promise.resolve();
 			}
 			current_selection.then(function(x) {
-				centra_api('POST', 'selection/items/' + item.item, {}, user_data.token).then(function(response) {
+				centra_api('POST', 'items/' + item.item, {}, user_data.token).then(function(response) {
 					res.redirect(req.base + req.url)
 				}).catch(function(e) {
 					console.log(e)
@@ -473,33 +473,33 @@ var centra = {
   			if(line = findLine(req.body.increase[0])) {
   				item = line.line;
   				method = 'POST';
-  				path = 'selection/lines/' + line.line + '/quantity/1';
+  				path = 'lines/' + line.line + '/quantity/1';
   			}
   		} else if(req.body.decrease) {
   			//-1
   			if(line = findLine(req.body.decrease[0])) {
   				item = line.line;
   				method = 'DELETE';
-  				path = 'selection/lines/' + line.line + '/quantity/1';
+  				path = 'lines/' + line.line + '/quantity/1';
   			}
   		} else if(req.body.remove) {
   			//-1
   			if(line = findLine(req.body.remove[0])) {
   				item = line.line;
   				method = 'DELETE';
-  				path = 'selection/lines/' + line.line;
+  				path = 'lines/' + line.line;
   			}
   		} else if(req.body.voucher) {
   			method = 'POST';
-  			path = 'selection/vouchers';
+  			path = 'vouchers';
   			data.voucher = req.body.voucher;
   		} else if(req.body.voucher_remove) {
   			method = 'DELETE';
-  			path = 'selection/vouchers';
+  			path = 'vouchers';
   			data.voucher = req.body.voucher_remove;
   		} else if(req.body.payment_method) {
   			method = 'PUT';
-  			path = 'selection/payment-methods/' + encodeURIComponent(req.body.payment_method);
+  			path = 'payment-methods/' + encodeURIComponent(req.body.payment_method);
   		} else if(req.body.checkout) {
   			data = {
   				termsAndConditions: req.body.termsAndConditions || 0,
@@ -520,7 +520,7 @@ var centra = {
   				}
   			};
   			method = 'POST';
-  			path = 'selection/payment'
+  			path = 'payment'
   			redirect = false;
   		}
   		if(method) {
