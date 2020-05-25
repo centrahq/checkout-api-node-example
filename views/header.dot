@@ -18,14 +18,6 @@ var base = '{{=base}}';
 		<li><a href="{{!base}}/{{!value.uri}}">{{!value.name}}</a></li>
 	{{~}}
 	</ul>
-
-	<ul>
-	<li><a href="{{!base}}/lookbooks">Lookbooks</a></li>
-		{{ lookbooks=this.include().filterArticles(it.user_data.articles, 'lookbooks'); }}
-		{{~lookbooks :value}}
-			<li><a href="{{!base}}/lookbooks/{{!value.uri}}">{{!value.listTitle}}</a></li>
-		{{~}}
-	</ul>
 	<div id="header-side">
 		<form action="{{!base}}/search" method="get">
 			<input name="q" value="{{!it.req.query.q}}" />

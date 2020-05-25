@@ -103,19 +103,16 @@ var centra = {
 		var user_specific = {
 			market: user_data.market,
 			pricelist: user_data.pricelist,
-			/*language: user_data.language*/
+			language: user_data.language
 		}
 		return Promise.all([
 			centra_api('POST', 'categories', user_specific),
-			centra_api('POST', 'cms/articles', user_specific),
 			user_data.token ? centra_api('GET', 'selection', {}, user_data.token) : Promise.resolve(),
 		]).then(function([
 			categories,
-			articles,
 			selection,
 		]) {
 			user_data.categories = categories.body.categories;
-			user_data.articles = articles.body.articles;
 
 			if(selection && selection.body.selection) {
 				user_data.selection = selection.body
@@ -310,7 +307,7 @@ var centra = {
 						country: country.country,
 						pricelist: country.pricelist,
 						market: country.market,
-						/*language: user_data.language*/
+						language: user_data.language
 					}, user_data.token).then(function(data) {
 				            var selection = data.body.authorized;
 				            req.session.market = selection.market;
@@ -414,7 +411,7 @@ var centra = {
   	var user_data = { ... centra.init_user_data }; //make this current user's data.
   	centra.init(req, res, user_data).then(function() {
   		var q = req.query.q;
-  		centra_api('POST', 'products', {search: q/*, language: user_data.language*/}).then(function(response) {
+  		centra_api('POST', 'products', {search: q, language: user_data.language}).then(function(response) {
   			render.finalize(req, res, 'search', user_data, response);
   		});
   	}).catch(function(e) {
@@ -434,7 +431,7 @@ var centra = {
 					market: user_data.market,
 					pricelist: user_data.pricelist,
 					country: user_data.country,
-					/*language: user_data.language*/
+					language: user_data.language
 				}, user_data.token).then(function(response) {
 					req.session.token = response.body.token;
 					user_data.token = response.body.token;
@@ -590,12 +587,12 @@ app.post('*', function(req, res, next) {
 			for: ['product'],
 			market: user_data.market,
 			pricelist: user_data.pricelist,
-			/*language: user_data.language,*/
+			language: user_data.language,
 		}).then(function([data]) {
 			// add product to cart
 			centra.productAdd(req, res, user_data, data);
 		}).catch(function(err) {
-			console.log(err.message);
+			console.log(err.message, err.stack);
 			res.send('404');
 		});
 	})
@@ -607,21 +604,21 @@ app.get('*', function(req, res, next) {
 	centra.init(req, res, user_data).then(function() {
 		centra.getData('POST', 'uri', {
 			uri: req.url,
-			for: ['cmsArticle', 'category', 'product'],
+			for: ['category', 'product'],
 			market: user_data.market,
 			pricelist: user_data.pricelist,
-			/*language: user_data.language,*/
+			language: user_data.language,
 		}).then(function([data]) {
 			var page = data.body.found;
 			render.finalize(req, res, page, user_data, data)
 		}).catch(function(err) {
-			console.log(err.message);
+			console.log(err.message, err.stack);
 			res.send('404');
 		});
 	}).catch(function(e) {
 		if(e == 'redirect') return; // redirect catch of promise. ignore.
 		// error
-		console.error('Error:', e)
+		console.error('Error:', e, e.stack)
 	});;
 });
 
@@ -655,11 +652,11 @@ render = {
 		var body = '';
 		var wrapper = {header: '', footer: ''};
 		switch(page) {
-			case 'cmsArticle':
+			/*case 'cmsArticle':
 				var article = data.body.cmsArticle;
 				wrapper = render.head(req, res, user_data, {title: article.title})
 				body = dots.article({title: article.title, parts: article.parts, user_data: user_data, req: req})
-			break;
+			break;*/
 			case 'search':
 				var products = data.body.products;
 				product_list = centra.buildProducts(products);
