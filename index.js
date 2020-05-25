@@ -125,7 +125,7 @@ var centra = {
         if(selection_data.pricelist != user_data.pricelist) change.pricelist = user_data.pricelist;
         if(Object.keys(change).length)
           return centra_api('PUT', 'selection', change, user_data.token).then(function(response) {
-            var selection_data = response.body.authorized;
+            var selection_data = response.body.location;
             user_data.selection = response.body;
             user_data.country = selection_data.country;
             user_data.market = selection_data.market;
@@ -310,7 +310,7 @@ var centra = {
             market: country.market,
             language: user_data.language
           }, user_data.token).then(function(data) {
-            var selection = data.body.authorized;
+            var selection = data.body.location;
             req.session.market = selection.market;
             req.session.pricelist = selection.pricelist
             req.session.country = selection.country;
